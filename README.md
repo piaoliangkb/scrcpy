@@ -1,3 +1,8 @@
+# patch
+
+1. Add frame decoding time according to: https://github.com/Genymobile/scrcpy/issues/1906
+
+
 # scrcpy (v1.24)
 
 <img src="app/data/icon.svg" width="128" height="128" alt="scrcpy" align="right" />
