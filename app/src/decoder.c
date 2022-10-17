@@ -3,6 +3,8 @@
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 
+#include <SDL2/SDL_timer.h>
+
 #include "events.h"
 #include "video_buffer.h"
 #include "trait/frame_sink.h"
@@ -102,6 +104,9 @@ sc_decoder_push(struct sc_decoder *decoder, const AVPacket *packet) {
         return true;
     }
 
+    static unsigned i;
+    uint32_t start = SDL_GetTicks();
+
     int ret = avcodec_send_packet(decoder->codec_ctx, packet);
     if (ret < 0 && ret != AVERROR(EAGAIN)) {
         LOGE("Could not send video packet: %d", ret);
@@ -114,6 +119,9 @@ sc_decoder_push(struct sc_decoder *decoder, const AVPacket *packet) {
         // A frame lost should not make the whole pipeline fail. The error, if
         // any, is already logged.
         (void) ok;
+
+        uint32_t end = SDL_GetTicks();
+        LOGI("packet %d decoding: %" PRIu32 " ms", i++, end - start);
 
         av_frame_unref(decoder->frame);
     } else if (ret != AVERROR(EAGAIN)) {
